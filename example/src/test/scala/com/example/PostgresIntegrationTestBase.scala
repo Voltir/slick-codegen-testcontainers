@@ -5,6 +5,7 @@ import com.dimafeng.testcontainers.{
   ForAllTestContainer,
   PostgreSQLContainer
 }
+import org.flywaydb.core.Flyway
 import org.scalatest.AsyncTestSuite
 import org.testcontainers.utility.DockerImageName
 
@@ -61,6 +62,15 @@ trait PostgresIntegrationTestBase[Profile <: JdbcProfile]
     )
   }
 
+  def flywayMigrate(adminUrl: String): Unit = {
+    val flyway = Flyway
+      .configure()
+      .dataSource(adminUrl, user.name, user.password)
+      .locations("migrations")
+      .load()
+    flyway.migrate()
+  }
+  
   private def setPostgresConfigs(user: UserStuff): Unit = {
     assert(
       postgresqlContainer.jdbcUrl.contains(
@@ -77,13 +87,25 @@ trait PostgresIntegrationTestBase[Profile <: JdbcProfile]
     stuff = DbStuff(postgresqlContainer.host, postgresPort)
 
     /// TODO BETTER
+    val schema = "service"
     val adminDbUrl = s"jdbc:postgresql://${stuff.host}:${stuff.port}/postgres"
+    val serviceUrl =
+      s"jdbc:postgresql://${stuff.host}:${postgresPort}/$databaseName?currentSchema=$schema"
+
     Todo.executeCmd(
       s"create database $databaseName",
       adminDbUrl,
       user.name,
       user.password
     )
+    Todo.executeCmd(
+      s"create schema if not exists $schema",
+      serviceUrl,
+      user.name,
+      user.password
+    )
+
+    flywayMigrate(serviceUrl)
   }
 }
 

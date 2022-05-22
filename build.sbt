@@ -56,6 +56,7 @@ lazy val example = (project in file("example"))
   .settings(
     libraryDependencies ++= slick ++ testcontainers ++ Seq(slickpg, postgres),
     libraryDependencies ++= Seq(
+      flyway % Test,
       scalaTest % Test
     )
   )
