@@ -21,6 +21,7 @@ class TestSpec
     "select" in {
       db.run(sql"select 1".as[Int]).map { result =>
         println(result)
+        psqlDebug()
         true shouldBe true
       }
     }

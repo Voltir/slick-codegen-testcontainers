@@ -4,11 +4,11 @@ object Dependencies {
 
   object Versions {
     val flyway = "8.5.11"
-    val postgres = "42.3.5"
+    val postgres = "42.5.0"
     val scalatest = "3.2.11"
-    val slick = "3.4.0-M1"
-    val slickpg = "0.21.0-M1"
-    val testcontainersVersion = "0.38.8"
+    val slick = "3.5.0-M3"
+    val slickpg = "0.22.0-M3"
+    val testcontainersVersion = "0.40.15"
   }
 
   lazy val scalaTest = "org.scalatest" %% "scalatest" % Versions.scalatest
@@ -18,14 +18,14 @@ object Dependencies {
   lazy val postgres = "org.postgresql" % "postgresql" % Versions.postgres
 
   val slick: Seq[ModuleID] = Seq(
-    "com.typesafe.slick" %% "slick" % Versions.slick,
-    "com.typesafe.slick" %% "slick-hikaricp" % Versions.slick
+    ("com.typesafe.slick" %% "slick" % Versions.slick).cross(CrossVersion.for3Use2_13),
+    ("com.typesafe.slick" %% "slick-hikaricp" % Versions.slick).cross(CrossVersion.for3Use2_13)
   )
 
   val slickcodegen: ModuleID =
-    "com.typesafe.slick" %% "slick-codegen" % Versions.slick
+    ("com.typesafe.slick" %% "slick-codegen" % Versions.slick).cross(CrossVersion.for3Use2_13)
 
-  val slickpg = "com.github.tminglei" %% "slick-pg" % Versions.slickpg
+  val slickpg = ("com.github.tminglei" %% "slick-pg" % Versions.slickpg).cross(CrossVersion.for3Use2_13)
 
   val testcontainers: Seq[ModuleID] = Seq(
     "com.dimafeng" %% "testcontainers-scala-scalatest" % Versions.testcontainersVersion % Test,

@@ -10,13 +10,12 @@ trait Tables {
   val profile: slick.jdbc.JdbcProfile
   import profile.api._
   import slick.model.ForeignKeyAction
-  // NOTE: GetResult mappers for plain SQL are only generated for tables where Slick knows how to map the types of all columns.
+  // NOTE: GetResult mappers for plain SQL are only generated for
+  // tables where Slick knows how to map the types of all columns.
   import slick.jdbc.{GetResult => GR}
 
   /** DDL for all tables. Call .create to execute. */
   lazy val schema: profile.SchemaDescription = Examples.schema
-  @deprecated("Use .schema instead of .ddl", "3.0")
-  def ddl = schema
 
   /** Entity class storing rows of table Examples
    *  @param id Database column id SqlType(uuid), PrimaryKey
@@ -33,7 +32,7 @@ trait Tables {
   class Examples(_tableTag: Tag) extends profile.api.Table[ExamplesRow](_tableTag, Some("service"), "examples") {
     def * = (id, name, name2, isDeleted).<>(ExamplesRow.tupled, ExamplesRow.unapply)
     /** Maps whole row to an option. Useful for outer joins. */
-    def ? = ((Rep.Some(id), Rep.Some(name), Rep.Some(name2), Rep.Some(isDeleted))).shaped.<>({r=>import r._; _1.map(_=> ExamplesRow.tupled((_1.get, _2.get, _3.get, _4.get)))}, (_:Any) =>  throw new Exception("Inserting into ? projection not supported."))
+    def ? = ((Rep.Some(id), Rep.Some(name), Rep.Some(name2), Rep.Some(isDeleted))).shaped.<>({r=>import r._; _1.map(_=> ExamplesRow.tupled((_1.get, _2.get, _3.get, _4.get)))}, (_:Any) => throw new Exception("Inserting into ? projection not supported."))
 
     /** Database column id SqlType(uuid), PrimaryKey */
     val id: Rep[java.util.UUID] = column[java.util.UUID]("id", O.PrimaryKey)

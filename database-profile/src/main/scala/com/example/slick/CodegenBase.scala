@@ -55,13 +55,14 @@ trait CodegenBase[Profile <: JdbcProfile] {
     import _profile.api._
 
     val db: Database =
-      Database.forURL(
-        settings.serviceUrl,
-        dbUser,
-        dbPassword,
-        driver = "org.postgresql.Driver",
-        keepAliveConnection = true
-      )
+//      Database.forURL(
+//        settings.serviceUrl,
+//        user = dbUser,
+//        password = dbPassword,
+//        driver = "org.postgresql.Driver",
+//        keepAliveConnection = true
+//      )
+    Database.forURL(settings.serviceUrl, Map("user" -> dbUser, "password" -> dbPassword))
 
     private def initDb(): Unit = {
       executeCmd(s"create database ${settings.dbName}", settings.adminUrl)

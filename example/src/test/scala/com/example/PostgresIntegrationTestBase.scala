@@ -41,7 +41,10 @@ trait PostgresIntegrationTestBase[Profile <: JdbcProfile]
       db.close()
     }
     val dburl = s"jdbc:postgresql://${stuff.host}:${stuff.port}/$databaseName"
-    db = Database.forURL(dburl, user.name, user.password)
+    db = Database.forURL(
+      dburl,
+      Map("user" -> user.name, "password" -> user.password)
+    )
   }
 
   def initPostgresqlContainer(
@@ -70,7 +73,19 @@ trait PostgresIntegrationTestBase[Profile <: JdbcProfile]
       .load()
     flyway.migrate()
   }
-  
+
+  // Print line a connection string and block with a readline
+  def psqlDebug(): Unit = {
+    val schema = "service"
+    val msg =
+      s"""
+        |To manually connect to the running docker test-container:
+        |  psql "host=${stuff.host} port=${stuff.port} user=${user.name} password=${user.password} dbname=$databaseName options=--search_path=$schema,public"
+        |""".stripMargin
+    println(msg)
+    val _ = scala.io.StdIn.readLine()
+  }
+
   private def setPostgresConfigs(user: UserStuff): Unit = {
     assert(
       postgresqlContainer.jdbcUrl.contains(
